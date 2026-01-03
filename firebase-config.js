@@ -4,25 +4,20 @@ require('dotenv').config();
 // Initialize Firebase Admin SDK
 const initializeFirebase = () => {
     try {
-        // For production, use environment variables
-        if (process.env.FIREBASE_PRIVATE_KEY) {
-            const serviceAccount = {
-                type: "service_account",
-                project_id: process.env.FIREBASE_PROJECT_ID,
-                private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-                client_email: process.env.FIREBASE_CLIENT_EMAIL,
-            };
-
-            admin.initializeApp({
-                credential: admin.credential.cert(serviceAccount)
-            });
-        } else {
-            // For local development, use service account file
-            const serviceAccount = require('./firebase-service-account.json');
-            admin.initializeApp({
-                credential: admin.credential.cert(serviceAccount)
-            });
+        if (!process.env.FIREBASE_PRIVATE_KEY || !process.env.FIREBASE_PROJECT_ID || !process.env.FIREBASE_CLIENT_EMAIL) {
+            throw new Error('Missing required Firebase environment variables');
         }
+
+        const serviceAccount = {
+            type: "service_account",
+            project_id: process.env.FIREBASE_PROJECT_ID,
+            private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+            client_email: process.env.FIREBASE_CLIENT_EMAIL,
+        };
+
+        admin.initializeApp({
+            credential: admin.credential.cert(serviceAccount)
+        });
 
         console.log('✅ Firebase initialized successfully');
     } catch (error) {

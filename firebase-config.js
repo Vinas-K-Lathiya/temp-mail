@@ -4,8 +4,11 @@ require('dotenv').config();
 // Initialize Firebase Admin SDK
 const initializeFirebase = () => {
     try {
-        if (!process.env.FIREBASE_PRIVATE_KEY || !process.env.FIREBASE_PROJECT_ID || !process.env.FIREBASE_CLIENT_EMAIL) {
-            throw new Error('Missing required Firebase environment variables');
+        const requiredVars = ['FIREBASE_PROJECT_ID', 'FIREBASE_PRIVATE_KEY', 'FIREBASE_CLIENT_EMAIL'];
+        const missingVars = requiredVars.filter(key => !process.env[key]);
+
+        if (missingVars.length > 0) {
+            throw new Error(`Missing required Firebase environment variables: ${missingVars.join(', ')}`);
         }
 
         const privateKey = process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n');

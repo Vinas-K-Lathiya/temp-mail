@@ -8,7 +8,13 @@ const { initializeFirebase, createUser, getEmails, markEmailAsRead, getFirestore
 const { handleIncomingEmail } = require('./email-handler');
 
 // Initialize Firebase
-initializeFirebase();
+// Initialize Firebase
+try {
+    initializeFirebase();
+} catch (error) {
+    console.error('❌ Failed to initialize Firebase:', error.message);
+    process.exit(1);
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;

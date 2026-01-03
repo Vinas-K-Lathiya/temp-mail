@@ -8,10 +8,18 @@ const initializeFirebase = () => {
             throw new Error('Missing required Firebase environment variables');
         }
 
+        const privateKey = process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n');
+
+        // Debug logging (safe)
+        console.log('Key length:', privateKey.length);
+        console.log('Key starts with:', privateKey.substring(0, 20));
+        console.log('Project ID:', process.env.FIREBASE_PROJECT_ID);
+        console.log('Client Email:', process.env.FIREBASE_CLIENT_EMAIL);
+
         const serviceAccount = {
             type: "service_account",
             project_id: process.env.FIREBASE_PROJECT_ID,
-            private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+            private_key: privateKey,
             client_email: process.env.FIREBASE_CLIENT_EMAIL,
         };
 
@@ -19,9 +27,12 @@ const initializeFirebase = () => {
             credential: admin.credential.cert(serviceAccount)
         });
 
+        console.log('Firebase Admin Apps:', admin.apps.length);
+
         console.log('✅ Firebase initialized successfully');
     } catch (error) {
         console.error('❌ Firebase initialization error:', error.message);
+        throw error;
     }
 };
 
